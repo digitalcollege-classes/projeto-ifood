@@ -40,4 +40,49 @@ class FileService
         
         return new FileImport($empresa, $tipo);
     }
+    
+    public static function remove(string $empresa, array $matriculasToDelete): void {
+    
+        $colaboradoresFilePath = "data/{$empresa}/colaboradores.csv";    
+
+        $colaboradoresFile = fopen($colaboradoresFilePath, "a+");
+
+        $linesToKeep = [];
+
+        $lines = file($colaboradoresFilePath);
+
+        foreach ($lines as $line) {
+            
+            $matricula = explode(';', $line)[0];
+        
+            if (!in_array($matricula, $matriculasToDelete)) {
+                $linesToKeep[] = $line;
+            }
+        }
+        
+        ftruncate($colaboradoresFile, 0);
+
+        foreach ($linesToKeep as $line) {
+            fwrite($colaboradoresFile, $line);
+        }
+
+        fclose($colaboradoresFile);
+
+        echo "Linhas removidas com sucesso." . PHP_EOL;
+    }
+
+    public static function getMatriculas($empresa, $nomeDoArquivo) {
+        $matriculasToDelete = [];
+        $linhas = file($nomeDoArquivo);
+        foreach ($linhas as $linha) {
+            if ($empresa === 'digitalcollege') {
+                $partes = explode(';', $linha);
+            } else {
+                $partes = explode(',', $linha);
+            }
+            $matricula = $partes[0];
+            $matriculasToDelete[] = $matricula;
+        }
+        return $matriculasToDelete;
+    }
 }
