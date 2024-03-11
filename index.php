@@ -14,7 +14,6 @@ echo "- Tipo: {$file->tipo}".PHP_EOL;
 
 
 if ($file->tipo === 'saida') {
-
     $matriculasToDelete = FileService::getMatriculas($file->empresa, $nomeDoArquivo);
 
     FileService::remove($file->empresa, $matriculasToDelete);
